@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebForge Builder - Sign In</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-wrapper">
+        <div class="gradient-bg"></div>
+        <div class="texture-overlay"></div>
+    </div>
+
+    <main class="login-container">
+        <div class="login-card">
+            <div class="brand">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 1V23M1 12H23" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <span class="brand-name">WebForge</span>
+            </div>
+
+            <div class="form-header">
+                <h1>Sign in to your account</h1>
+                <p>Enter your credentials to access the dashboard</p>
+            </div>
+
+            <form id="emailForm" class="form-group">
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="name@company.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign in with Email</button>
+            </form>
+
+            <div class="divider">
+                <span>or</span>
+            </div>
+
+            <button id="googleSignIn" class="btn btn-google">
+                <div class="google-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12.48 10.92v3.28h3.6l-1.64 1.8-1.6-1.8h-3.6V10.92zm5.64 5.64H8.88v-3.6h1.44v-1.08h-1.44V7.8h4.8v3.6h-1.44v1.08h1.44v3.6z" fill="#5F6368"/>
+                        <path d="M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2c5.22 0 9.54 3.44 11.12 8.38-.52 3.74-3.28 6.94-6.64 8.12-.24-.32-.48-.7-.72-1.08-.52-.92-1.2-1.92-1.92-2.88C13.2 10.92 13.6 10.08 14 9.12c.8-1.2 1.2-2.64 1.2-4.08 0-3.08-2.16-5.64-5.04-6.12-2.28-.36-4.32.48-5.4 2.04-1.2 1.68-1.56 3.84-1.08 5.88.48 2.16 1.44 4.08 2.88 5.4-2.52.24-4.68.96-6.48 2.04C2.56 14.88 2 15.92 2 17.12c0 1.92 1.2 3.6 3 4.32.96.48 2.04.72 3.12.72 1.92 0 3.6-.96 4.56-2.4.96-1.44 1.2-3.12 1.2-4.8 0-.48 0-.96-.12-1.44H12.48z" fill="#5F6368"/>
+                    </svg>
+                </div>
+                <span>Sign in with Google</span>
+            </button>
+
+            <div class="footer-links">
+                <a href="#">Forgot password?</a>
+                <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+        <div id="toast-container"></div>
+    </main>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
