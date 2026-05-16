@@ -14,87 +14,98 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
+// Google Client ID
+const googleClientId = "1059355688483-ee9g0rurtbo4k1o5kafkunrot9nkge97.apps.googleusercontent.com";
+
 // DOM Elements
-const emailForm = document.getElementById('emailForm');
-const googleBtn = document.getElementById('googleSignIn');
-const toastContainer = document.getElementById('toast-container');
+const loginForm = document.getElementById('loginForm');
+const googleSignInButton = document.getElementById('googleSignIn');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
 
-// Helper: Show Toast Notification
-function showToast(message, type = 'success') {
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-  toast.textContent = message;
-  
-  toastContainer.appendChild(toast);
-  
-  // Remove toast after 3 seconds
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateX(100%)';
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-}
+// Initialize Google Auth Provider
+const provider = new firebase.auth.GoogleAuthProvider();
+provider.setCustomParameters({
+  'client_id': googleClientId
+});
 
-// Handle Email/Password Sign In
-emailForm.addEventListener('submit', (e) => {
+// Email/Password Sign In
+loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   
-  const email = document.querySelector('#email').value;
-  const password = document.querySelector('#password').value;
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
   
-  // Simple validation
-  if (!email || !password) {
-    showToast('Please enter both email and password', 'error');
-    return;
+  try {
+    // Show loading state
+    const submitBtn = loginForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Signing in...';
+    submitBtn.disabled = true;
+    
+    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+    
+    // Success - redirect to dashboard
+    console.log('User signed in:', userCredential.user);
+    window.location.href = '/dashboard.html'; // Redirect to dashboard
+    
+  } catch (error) {
+    console.error('Sign in error:', error);
+    
+    // Display error message
+    const errorMessage = error.message || 'An error occurred during sign in';
+    alert(errorMessage);
+    
+    // Reset button state
+    const submitBtn = loginForm.querySelector('button[type="submit"]');
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
   }
-  
-  auth.signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      // Sign-in successful
-      const user = userCredential.user;
-      showToast(`Welcome back, ${user.email}!`);
-      // Redirect or update UI could happen here
-      console.log('Email sign-in successful:', user);
-    })
-    .catch((error) => {
-      // Handle errors
-      showToast(error.message || 'Sign-in failed', 'error');
-    });
 });
 
-// Handle Google Sign In
-googleBtn.addEventListener('click', () => {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  
-  // Optional: customize provider
-  // provider.addScope('https://www.googleapis.com/auth/userinfo.email');
-  
-  auth.signInWithPopup(provider)
-    .then((result) => {
-      /** @type {firebase.auth.UserCredential} */
-      const credential = result.credential;
-      const user = result.user;
-      
-      // This gives you a Google Access Token
-      // const token = credential.accessToken;
-      
-      console.log('Google sign-in successful:', user);
-      showToast(`Signed in as ${user.displayName}`);
-    })
-    .catch((error) => {
-      // Handle errors
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error('Google sign-in error:', error);
-      showToast(errorMessage || 'Google sign-in failed', 'error');
-    });
+// Google Sign In
+googleSignInButton.addEventListener('click', async () => {
+  try {
+    // Show loading state
+    const originalText = googleSignInButton.textContent;
+    googleSignInButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+    googleSignInButton.disabled = true;
+    
+    const result = await auth.signInWithPopup(provider);
+    
+    // Success - redirect to dashboard
+    console.log('Google user signed in:', result.user);
+    window.location.href = '/dashboard.html'; // Redirect to dashboard
+    
+  } catch (error) {
+    console.error('Google sign in error:', error);
+    
+    // Display error message
+    const errorMessage = error.message || 'An error occurred during Google sign in';
+    alert(errorMessage);
+    
+    // Reset button state
+    googleSignInButton.innerHTML = '<i class="fab fa-google"></i><span>Sign in with Google</span>';
+    googleSignInButton.disabled = false;
+  }
 });
 
-// Initialize state listener (optional, for UI updates)
-// auth.onAuthStateChanged((user) => {
-//   if (user) {
-//     console.log('User is signed in:', user);
-//   } else {
-//     console.log('User is signed out');
-//   }
-// });
+// Auth state persistence
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  .then(() => {
+    console.log('Auth persistence set to LOCAL');
+  })
+  .catch((error) => {
+    console.error('Error setting auth persistence:', error);
+  });
+
+// Check if user is already signed in on page load
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    console.log('User already signed in:', user);
+    // User is signed in - redirect to dashboard
+    window.location.href = '/dashboard.html';
+  } else {
+    console.log('User not signed in');
+  }
+});
